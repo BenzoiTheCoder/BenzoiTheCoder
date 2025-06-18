@@ -1,0 +1,52 @@
+name: Update Repo Age Badge
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allow manual runs
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Calculate Repository Age
+        id: repo_age
+        run: |
+          # Get repo creation date via GitHub API
+          repo_info=$(curl -s https://api.github.com/repos/${{ github.repository }})
+          created_at=$(echo "$repo_info" | jq -r .created_at)
+
+          # Convert to seconds since epoch
+          created_ts=$(date -d "$created_at" +%s)
+          now_ts=$(date +%s)
+
+          # Calculate days
+          days=$(( (now_ts - created_ts) / 86400 ))
+
+          echo "Repository created on: $created_at ($days days ago)"
+          echo "days=$days" >> $GITHUB_OUTPUT
+
+      - name: Update README.md
+        run: |
+          # Escape for use in sed
+          badge_url="https://img.shields.io/badge/Repo%20Age-${{ steps.repo_age.outputs.days }}%20days-blue"
+          badge_md="![Repo Age](${badge_url})"
+
+          # Replace the badge in the README
+          sed -i '/<!-- ci-actions: repository date -->/c\<!-- ci-actions: repository date -->\n'"$badge_md" README.md
+
+      - name: Commit and Push if Changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Update repo age badge"
+            git push
+          else
+            echo "No changes to commit."
+          fi
