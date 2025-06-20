@@ -20,14 +20,14 @@ jobs:
         run: sudo apt-get install jq
 
       - name: Make script executable
-        run: chmod +x .github/workflows/update_repo_age.sh
+        run: chmod +x /.github/workflows/update_repo_age.sh
   
 
       - name: Run repo age update script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: bash .github/workflows/update_repo_age.sh
+        run: bash /.github/workflows/update_repo_age.sh
 
       - name: Commit and push if changed
         run: |
