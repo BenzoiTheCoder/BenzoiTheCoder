@@ -20,14 +20,14 @@ jobs:
         run: sudo apt-get install jq
 
       - name: Make script executable
-        run: chmod +x /.github/workflows/update_repo_age.sh
+        run: chmod +x .github/workflows/update_repo_age.sh
   
 
       - name: Run repo age update script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: bash /.github/workflows/update_repo_age.sh
+        run: bash .github/workflows/update_repo_age.sh
 
       - name: Commit and push if changed
         run: |
@@ -35,7 +35,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
           if ! git diff --cached --quiet; then
-            git commit -m "Update repo age badge"
+            git commit -m "update: update readme" -m "This action was done by a bot." -m "" -m "Co-authored-by: BenzoiTheCoder <benzoi9312@gmail.com>" -m "Signed-off by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
             git push origin HEAD:main
           else
             echo "No changes to commit."
