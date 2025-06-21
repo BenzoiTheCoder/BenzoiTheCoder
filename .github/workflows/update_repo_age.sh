@@ -37,5 +37,4 @@ awk '
       print "![Repo Age]('"$badge_url"')"
     }
   }
-' README.md > README.tmp && mv README.tmp REA
-DME.md
+' README.md > README.tmp && mv README.tmp README.md
